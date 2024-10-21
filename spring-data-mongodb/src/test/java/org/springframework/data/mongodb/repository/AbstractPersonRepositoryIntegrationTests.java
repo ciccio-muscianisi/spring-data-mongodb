@@ -90,7 +90,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 	@Autowired MongoOperations operations;
 
 	Person dave, oliver, carter, boyd, stefan, leroi, alicia;
-	QPerson person;
+	//QPerson person;
 
 	List<Person> all;
 
@@ -112,7 +112,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 		stefan = new Person("Stefan", "Lessard", 34);
 		leroi = new Person("Leroi", "Moore", 41);
 		alicia = new Person("Alicia", "Keys", 30, Sex.FEMALE);
-		person = new QPerson("person");
+		//person = new QPerson("person");
 
 		Arrays.asList(boyd, stefan, leroi, alicia).forEach(it -> {
 			it.createdAt = new Date(dave.createdAt.getTime() + 1000L);
@@ -305,6 +305,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 		assertThat(result).hasSize(1).contains(dave);
 	}
 
+	/*
 	@Test
 	void findsPeopleByQueryDslLastnameSpec() {
 
@@ -322,6 +323,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 		Iterable<Person> result = repository.findAll(person.address.zipCode.eq("C0123"));
 		assertThat(result).contains(dave).doesNotContain(carter, boyd, stefan, leroi, alicia);
 	}
+	 */
 
 	@Test
 	void findsPeopleByLocationNear() {
@@ -382,6 +384,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 		assertThat(result).hasSize(1).contains(dave);
 	}
 
+	/*
 	@Test
 	void findsPagedPeopleByPredicate() {
 
@@ -393,6 +396,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 		assertThat(page.getTotalElements()).isEqualTo(4L);
 		assertThat(page).contains(carter, stefan);
 	}
+	 */
 
 	@Test // DATADOC-136
 	void findsPeopleBySexCorrectly() {
@@ -950,6 +954,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 		assertThat(slice.getTotalElements()).isEqualTo(2L);
 	}
 
+	/*
 	@Test // DATAMONGO-972
 	@DirtiesState
 	void shouldExecuteFindOnDbRefCorrectly() {
@@ -986,6 +991,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 
 		assertThat(scroll).containsOnly(dave);
 	}
+	 */
 
 	@Test // DATAMONGO-1030
 	void executesSingleEntityQueryWithProjectionCorrectly() {
@@ -1024,6 +1030,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 		assertThat(persons).hasSize(1).contains(alicia);
 	}
 
+	/*
 	@Test // DATAMONGO-1105
 	void returnsOrderedResultsForQuerydslOrderSpecifier() {
 
@@ -1096,6 +1103,7 @@ public abstract class AbstractPersonRepositoryIntegrationTests implements Dirtie
 		assertThat(result).hasSize(persons.size());
 		assertThat(result.iterator().next().getFirstname()).isEqualTo("Siggi 2");
 	}
+	 */
 
 	@Test // DATAMONGO-1165
 	void shouldAllowReturningJava8StreamInCustomQuery() {

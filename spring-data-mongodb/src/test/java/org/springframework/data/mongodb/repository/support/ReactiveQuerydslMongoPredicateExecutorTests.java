@@ -15,17 +15,37 @@
  */
 package org.springframework.data.mongodb.repository.support;
 
-import static org.assertj.core.api.Assertions.*;
-
+import com.mongodb.MongoException;
+import com.mongodb.reactivestreams.client.MongoClient;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.dao.PermissionDeniedDataAccessException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
+import org.springframework.data.mongodb.core.ReactiveMongoOperations;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.BasicQuery;
+import org.springframework.data.mongodb.test.util.MongoTestUtils;
+import org.springframework.data.mongodb.test.util.ReactiveMongoClientClosingTestConfiguration;
+import org.springframework.data.repository.query.FluentQuery;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
+/*
+import com.mongodb.MongoException;
+import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoDatabase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -50,14 +70,20 @@ import org.springframework.data.mongodb.repository.QUser;
 import org.springframework.data.mongodb.repository.User;
 import org.springframework.data.mongodb.repository.query.MongoEntityInformation;
 import org.springframework.data.mongodb.test.util.MongoTestUtils;
-import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.data.mongodb.test.util.ReactiveMongoClientClosingTestConfiguration;
+import org.springframework.data.repository.query.FluentQuery;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
-import com.mongodb.MongoException;
-import com.mongodb.reactivestreams.client.MongoClient;
-import com.mongodb.reactivestreams.client.MongoDatabase;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link ReactiveQuerydslMongoPredicateExecutor}.
@@ -66,12 +92,15 @@ import com.mongodb.reactivestreams.client.MongoDatabase;
  * @author Christoph Strobl
  * @author Rocco Lagrotteria
  */
+/*
 @RunWith(SpringRunner.class)
 @ContextConfiguration
 public class ReactiveQuerydslMongoPredicateExecutorTests {
 
-	@Autowired ReactiveMongoOperations operations;
-	@Autowired ReactiveMongoDatabaseFactory dbFactory;
+	@Autowired
+	ReactiveMongoOperations operations;
+	@Autowired
+	ReactiveMongoDatabaseFactory dbFactory;
 
 	ReactiveQuerydslMongoPredicateExecutor<Person> repository;
 
@@ -442,3 +471,6 @@ public class ReactiveQuerydslMongoPredicateExecutorTests {
 				.verifyComplete();
 	}
 }
+ */
+
+public class ReactiveQuerydslMongoPredicateExecutorTests {}

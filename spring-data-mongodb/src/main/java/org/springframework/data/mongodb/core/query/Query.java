@@ -285,9 +285,15 @@ public class Query implements ReadConcernAware, ReadPreferenceAware {
 	 */
 	public Query with(Pageable pageable) {
 
+		Assert.notNull(pageable, "Pageable must not be null");
+
 		if (pageable.isPaged()) {
 			this.limit = pageable.toLimit();
 			this.skip = pageable.getOffset();
+
+		} else {
+			this.limit = Limit.of(0);
+			this.skip = 0L;
 		}
 
 		return with(pageable.getSort());

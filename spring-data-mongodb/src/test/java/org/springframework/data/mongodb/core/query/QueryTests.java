@@ -23,12 +23,15 @@ import org.bson.Document;
 import org.junit.jupiter.api.Test;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.mongodb.InvalidMongoDbApiUsageException;
 import org.springframework.data.mongodb.core.SpecialDoc;
+
+import java.util.Map;
 
 /**
  * Unit tests for {@link Query}.
@@ -39,6 +42,7 @@ import org.springframework.data.mongodb.core.SpecialDoc;
  * @author Thomas Darimont
  * @author Christoph Strobl
  * @author Mark Paluch
+ * @author Francesco Muscianisi
  */
 class QueryTests {
 
@@ -367,14 +371,60 @@ class QueryTests {
 		compareQueries(target, source);
 	}
 
-	@Test // GH-4771
-	void appliesSortOfUnpagedPageable() {
 
-		Query query = new Query();
-		query.with(Pageable.unpaged(Sort.by("sortMe")));
+	@Test
+	void testQueryWithPageable() {
+		final int sourcePageNumber = 1;
+		final int sourcePageSize = 5;
+		final Sort sourceSort = Sort.by("field");
 
-		assertThat(query.isSorted()).isTrue();
+		final Pageable sourcePageable = PageRequest.of(sourcePageNumber, sourcePageSize, sourceSort);
+		final Query sourceQuery = (new Query()).with(sourcePageable);
+
+		final Document targetSort = new Document("field", 1);
+		final int targetLimit = sourcePageSize;
+		final long targetSkip = (long)sourcePageNumber * (long)sourcePageSize;
+
+		assertThat(sourceQuery.getSortObject()).isEqualTo(targetSort);
+		assertThat(sourceQuery.getLimit()).isEqualTo(targetLimit);
+		assertThat(sourceQuery.getSkip()).isEqualTo(targetSkip);
 	}
+
+
+	@Test
+	void testQueryWithUnpagedSortedPageable() {
+		final Sort sourceSort = Sort.by("field");
+
+		final Query sourceQuery = (new Query()).with(Pageable.unpaged(sourceSort));
+
+		final Document targetSort = new Document("field", 1);
+		final int targetLimit = 0;
+		final long targetSkipUpperBound = 1;
+
+		assertThat(sourceQuery.getSortObject()).isEqualTo(targetSort);
+		assertThat(sourceQuery.getLimit()).isEqualTo(targetLimit);
+		assertThat(sourceQuery.getSkip()).isLessThan(targetSkipUpperBound);
+	}
+
+
+	@Test
+	void testQueryWithChainedSortAndPageable() {
+		final Sort sourceSort = Sort.by("field1");
+		final Pageable sourcePageable = PageRequest.of(1, 5, Sort.by("field2").descending());
+
+		final Query sourceQuery = (new Query())
+				.with(sourceSort)
+				.with(sourcePageable);
+
+		final Document targetSort = new Document(Map.of("field1", 1, "field2", -1));
+		final int targetLimit = 5;
+		final long targetSkip = 5L;
+
+		assertThat(sourceQuery.getSortObject()).isEqualTo(targetSort);
+		assertThat(sourceQuery.getLimit()).isEqualTo(targetLimit);
+		assertThat(sourceQuery.getSkip()).isEqualTo(targetSkip);
+	}
+
 
 	private void compareQueries(Query actual, Query expected) {
 
